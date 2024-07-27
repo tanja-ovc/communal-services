@@ -19,6 +19,50 @@ services:
     env_file:
       - .env
 
+  redis:
+    image: redis:7.2.4-alpine
+    hostname: redis
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    hostname: worker
+    command: celery -A celery_app.app worker --loglevel=INFO
+    env_file:
+      - .env
+    environment:
+      POSTGRES_NAME: ${POSTGRES_NAME}
+      POSTGRES_LOCAL_PORT: ${POSTGRES_LOCAL_PORT}
+      POSTGRES_PORT: ${POSTGRES_LOCAL_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: db
+    volumes:
+      - static_value:/app/static/
+      - media_value:/app/media/
+    links:
+      - redis
+    depends_on:
+      - db
+      - redis
+
+  flower:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    hostname: flower
+    command: celery -A celery_app.app flower
+    volumes:
+      - static_value:/app/static/
+      - media_value:/app/media/
+    links:
+      - redis
+    depends_on:
+      - redis
+    ports:
+      - "5555:5555"
+
   nginx:
     image: nginx:1.21.3-alpine
     ports:

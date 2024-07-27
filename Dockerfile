@@ -4,9 +4,7 @@ RUN mkdir /app
 
 COPY requirements.txt /app
 
-RUN apt-get update \
-    && apt-get -y install libpq-dev gcc \
-    && pip install psycopg2
+RUN apt-get update
 
 RUN pip3 install -r /app/requirements.txt --no-cache-dir
 
