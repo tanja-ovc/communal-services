@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'debug_toolbar',
+    'corsheaders',
     'rest_framework',
     'building',
     'bill',
@@ -31,17 +32,19 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'middleware.ExceptionsHandlingMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 # IP адреса, при обращении с которых будет доступен Django Debug Toolbar
 INTERNAL_IPS = [
-    '127.0.0.1',
+    '127.0.0.1'
 ]
 
 ROOT_URLCONF = 'communal_services.urls'
@@ -99,7 +102,11 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CSRF_TRUSTED_ORIGINS = ['http://*.localhost', 'http://*.127.0.0.1']
+CORS_ALLOW_ALL_ORIGINS = True
 
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
